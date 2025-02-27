@@ -25,6 +25,7 @@ export function SpotForm({ onSubmit, isSubmitting }: SpotFormProps) {
     resolver: zodResolver(insertSpotSchema),
     defaultValues: {
       images: [],
+      location: { lat: 46.5, lng: 7.0 }, // Default to Swiss Alps center
     },
   });
 
@@ -83,7 +84,7 @@ export function SpotForm({ onSubmit, isSubmitting }: SpotFormProps) {
           )}
         />
 
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid md:grid-cols-2 gap-4">
           <FormField
             control={form.control}
             name="elevation"
@@ -122,6 +123,60 @@ export function SpotForm({ onSubmit, isSubmitting }: SpotFormProps) {
             )}
           />
         </div>
+
+        <div className="grid md:grid-cols-2 gap-4">
+          <FormField
+            control={form.control}
+            name="location.lat"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Latitude</FormLabel>
+                <FormControl>
+                  <Input 
+                    type="number" 
+                    step="0.000001" 
+                    {...field} 
+                    onChange={e => field.onChange(parseFloat(e.target.value))}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="location.lng"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Longitude</FormLabel>
+                <FormControl>
+                  <Input 
+                    type="number" 
+                    step="0.000001" 
+                    {...field}
+                    onChange={e => field.onChange(parseFloat(e.target.value))}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </div>
+
+        <FormField
+          control={form.control}
+          name="access"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Access Information</FormLabel>
+              <FormControl>
+                <Textarea {...field} placeholder="How to get to the starting point..." />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
 
         <Button type="submit" disabled={isSubmitting}>
           {isSubmitting ? "Adding..." : "Add Spot"}
