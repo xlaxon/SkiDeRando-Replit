@@ -1,4 +1,6 @@
-import { type Spot, type InsertSpot, type TripReport, type InsertTripReport } from "@shared/schema";
+import { type Spot, type InsertSpot, type TripReport, type InsertTripReport, spots, tripReports } from "@shared/schema";
+import { db } from "./db";
+import { eq } from "drizzle-orm";
 
 export interface IStorage {
   getSpots(): Promise<Spot[]>;
@@ -8,46 +10,29 @@ export interface IStorage {
   createTripReport(report: InsertTripReport): Promise<TripReport>;
 }
 
-export class MemStorage implements IStorage {
-  private spots: Map<number, Spot>;
-  private tripReports: Map<number, TripReport>;
-  private spotId: number;
-  private reportId: number;
-
-  constructor() {
-    this.spots = new Map();
-    this.tripReports = new Map();
-    this.spotId = 1;
-    this.reportId = 1;
-  }
-
+export class DatabaseStorage implements IStorage {
   async getSpots(): Promise<Spot[]> {
-    return Array.from(this.spots.values());
+    return await db.select().from(spots);
   }
 
   async getSpot(id: number): Promise<Spot | undefined> {
-    return this.spots.get(id);
-  }
-
-  async createSpot(insertSpot: InsertSpot): Promise<Spot> {
-    const id = this.spotId++;
-    const spot: Spot = { ...insertSpot, id };
-    this.spots.set(id, spot);
+    const [spot] = await db.select().from(spots).where(eq(spots.id, id));
     return spot;
   }
 
-  async getTripReports(spotId: number): Promise<TripReport[]> {
-    return Array.from(this.tripReports.values()).filter(
-      (report) => report.spotId === spotId
-    );
+  async createSpot(spot: InsertSpot): Promise<Spot> {
+    const [created] = await db.insert(spots).values(spot).returning();
+    return created;
   }
 
-  async createTripReport(insertReport: InsertTripReport): Promise<TripReport> {
-    const id = this.reportId++;
-    const report: TripReport = { ...insertReport, id };
-    this.tripReports.set(id, report);
-    return report;
+  async getTripReports(spotId: number): Promise<TripReport[]> {
+    return await db.select().from(tripReports).where(eq(tripReports.spotId, spotId));
+  }
+
+  async createTripReport(report: InsertTripReport): Promise<TripReport> {
+    const [created] = await db.insert(tripReports).values(report).returning();
+    return created;
   }
 }
 
-export const storage = new MemStorage();
+export const storage = new DatabaseStorage();
