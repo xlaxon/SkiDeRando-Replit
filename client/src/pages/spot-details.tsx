@@ -1,9 +1,10 @@
-import { useQuery, useMutation } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { useParams, Link } from "wouter";
 import type { Spot, TripReport } from "@shared/schema";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Mountain, Calendar, ArrowUp } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { GpxTrackMap } from "@/components/gpx-track-map";
 
 export default function SpotDetails() {
   const { id } = useParams();
@@ -70,7 +71,7 @@ export default function SpotDetails() {
           )}
 
           {reports?.map((report) => (
-            <Card key={report.id} className="mb-4">
+            <Card key={report.id} className="mb-8">
               <CardHeader>
                 <CardTitle>{report.title}</CardTitle>
                 <p className="text-sm text-muted-foreground">
@@ -81,11 +82,14 @@ export default function SpotDetails() {
                 <p className="text-muted-foreground">{report.description}</p>
                 <p className="text-sm mt-2">Conditions: {report.conditions}</p>
                 {report.gpxTrack && (
-                  <Button variant="outline" className="mt-2" asChild>
-                    <a href={`data:application/gpx+xml,${encodeURIComponent(report.gpxTrack)}`} download="track.gpx">
-                      Download GPX Track
-                    </a>
-                  </Button>
+                  <>
+                    <GpxTrackMap gpxData={report.gpxTrack} className="mt-4 rounded-lg overflow-hidden" />
+                    <Button variant="outline" className="mt-2" asChild>
+                      <a href={`data:application/gpx+xml,${encodeURIComponent(report.gpxTrack)}`} download="track.gpx">
+                        Download GPX Track
+                      </a>
+                    </Button>
+                  </>
                 )}
               </CardContent>
             </Card>
