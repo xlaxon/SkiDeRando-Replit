@@ -25,8 +25,12 @@ export const tripReports = pgTable("trip_reports", {
   gpxTrack: text("gpx_track"),
 });
 
+// Custom schema for trip reports that handles ISO date strings
+export const insertTripReportSchema = createInsertSchema(tripReports, {
+  date: z.string().transform((str) => new Date(str)),
+}).omit({ id: true });
+
 export const insertSpotSchema = createInsertSchema(spots).omit({ id: true });
-export const insertTripReportSchema = createInsertSchema(tripReports).omit({ id: true });
 
 export type InsertSpot = z.infer<typeof insertSpotSchema>;
 export type InsertTripReport = z.infer<typeof insertTripReportSchema>;
