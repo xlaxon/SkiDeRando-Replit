@@ -1,4 +1,5 @@
 import { MapContainer, TileLayer, Marker, Popup, Polyline } from "react-leaflet";
+import type { MapContainerProps, TileLayerProps, PolylineProps } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import { Link } from "wouter";
 import type { Spot, TripReport } from "@shared/schema";
@@ -19,15 +20,16 @@ export function MapView({ spots, tripReports = [], className }: MapViewProps) {
 
   // Calculate map center based on spot(s)
   const center = spotsArray.length === 1 
-    ? [spotsArray[0].location.lat, spotsArray[0].location.lng] 
-    : [46.5, 7.0]; // Default to Swiss Alps for multiple spots
+    ? [spotsArray[0].location.lat, spotsArray[0].location.lng] as [number, number]
+    : [46.5, 7.0] as [number, number]; // Default to Swiss Alps for multiple spots
 
   return (
     <div className="space-y-4">
       <MapContainer
-        center={center as [number, number]}
+        center={center}
         zoom={spotsArray.length === 1 ? 12 : 8}
         className={`h-[600px] ${className}`}
+        scrollWheelZoom={true}
       >
         <TileLayer
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
@@ -40,8 +42,8 @@ export function MapView({ spots, tripReports = [], className }: MapViewProps) {
                 <h3 className="font-semibold">{spot.name}</h3>
                 <p className="text-sm text-muted-foreground">{spot.difficulty}</p>
                 {Array.isArray(spots) && (
-                  <Link href={`/spots/${spot.id}`}>
-                    <a className="text-sm text-primary hover:underline">View Details</a>
+                  <Link href={`/spots/${spot.id}`} className="text-sm text-primary hover:underline">
+                    View Details
                   </Link>
                 )}
               </div>
@@ -59,7 +61,7 @@ export function MapView({ spots, tripReports = [], className }: MapViewProps) {
         )}
       </MapContainer>
 
-      {tripReports.length > 0 && (
+      {tripReports.length > 0 && tripReports.some(report => report.gpxTrack) && (
         <div className="bg-card p-4 rounded-lg">
           <h3 className="font-semibold mb-2">Trip Report Tracks</h3>
           <div className="space-y-2">
