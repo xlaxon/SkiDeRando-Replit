@@ -7,6 +7,7 @@ import NotFound from "@/pages/not-found";
 import Home from "@/pages/home";
 import AddSpot from "@/pages/add-spot";
 import SpotDetails from "@/pages/spot-details";
+import AddTripReport from "@/pages/add-trip-report";
 
 function Router() {
   return (
@@ -14,6 +15,7 @@ function Router() {
       <Route path="/" component={Home} />
       <Route path="/add-spot" component={AddSpot} />
       <Route path="/spots/:id" component={SpotDetails} />
+      <Route path="/spots/:id/add-report" component={AddTripReport} />
       <Route component={NotFound} />
     </Switch>
   );
