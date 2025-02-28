@@ -31,13 +31,20 @@ export function TripReportForm({ spotId, onSubmit, isSubmitting }: TripReportFor
     defaultValues: {
       spotId,
       images: [],
-      date: new Date(),
+      date: new Date().toISOString(),
     },
   });
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+      <form onSubmit={form.handleSubmit((data) => {
+        // Ensure the date is in ISO format
+        const formattedData = {
+          ...data,
+          date: data.date instanceof Date ? data.date.toISOString() : data.date,
+        };
+        onSubmit(formattedData);
+      })} className="space-y-6">
         <FormField
           control={form.control}
           name="title"
@@ -97,7 +104,7 @@ export function TripReportForm({ spotId, onSubmit, isSubmitting }: TripReportFor
                       )}
                     >
                       {field.value ? (
-                        format(field.value, "PPP")
+                        format(new Date(field.value), "PPP")
                       ) : (
                         <span>Pick a date</span>
                       )}
@@ -108,8 +115,8 @@ export function TripReportForm({ spotId, onSubmit, isSubmitting }: TripReportFor
                 <PopoverContent className="w-auto p-0" align="start">
                   <Calendar
                     mode="single"
-                    selected={field.value}
-                    onSelect={field.onChange}
+                    selected={field.value ? new Date(field.value) : undefined}
+                    onSelect={(date) => field.onChange(date?.toISOString())}
                     disabled={(date) =>
                       date > new Date() || date < new Date("1900-01-01")
                     }
