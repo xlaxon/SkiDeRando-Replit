@@ -28,10 +28,26 @@ type SpotFiltersProps = {
   spots: Spot[];
 };
 
+const DIFFICULTIES = {
+  all: "all",
+  easy: "facile",
+  intermediate: "intermédiaire",
+  advanced: "avancé",
+  expert: "expert",
+} as const;
+
+const SEASONS = {
+  all: "all",
+  winter: "hiver",
+  spring: "printemps",
+  summer: "été",
+  fall: "automne",
+} as const;
+
 export function SpotFilters({ onFiltersChange, spots }: SpotFiltersProps) {
   const [filters, setFilters] = useState<SpotFilters>({
-    difficulty: "",
-    bestSeason: "",
+    difficulty: DIFFICULTIES.all,
+    bestSeason: SEASONS.all,
     minElevation: 0,
     maxElevation: 5000,
   });
@@ -41,10 +57,10 @@ export function SpotFilters({ onFiltersChange, spots }: SpotFiltersProps) {
     setFilters(updatedFilters);
 
     const filteredSpots = spots.filter((spot) => {
-      if (updatedFilters.difficulty && spot.difficulty !== updatedFilters.difficulty) {
+      if (updatedFilters.difficulty !== DIFFICULTIES.all && spot.difficulty !== updatedFilters.difficulty) {
         return false;
       }
-      if (updatedFilters.bestSeason && spot.bestSeason !== updatedFilters.bestSeason) {
+      if (updatedFilters.bestSeason !== SEASONS.all && spot.bestSeason !== updatedFilters.bestSeason) {
         return false;
       }
       if (spot.elevation < updatedFilters.minElevation || spot.elevation > updatedFilters.maxElevation) {
@@ -65,18 +81,18 @@ export function SpotFilters({ onFiltersChange, spots }: SpotFiltersProps) {
         <div>
           <Label>Difficulté</Label>
           <Select
-            value={filters.difficulty || ""}
+            value={filters.difficulty}
             onValueChange={(value) => applyFilters({ difficulty: value })}
           >
             <SelectTrigger>
               <SelectValue placeholder="Toutes les difficultés" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="">Toutes</SelectItem>
-              <SelectItem value="easy">Facile</SelectItem>
-              <SelectItem value="intermediate">Intermédiaire</SelectItem>
-              <SelectItem value="advanced">Avancé</SelectItem>
-              <SelectItem value="expert">Expert</SelectItem>
+              <SelectItem value={DIFFICULTIES.all}>Toutes</SelectItem>
+              <SelectItem value={DIFFICULTIES.easy}>Facile</SelectItem>
+              <SelectItem value={DIFFICULTIES.intermediate}>Intermédiaire</SelectItem>
+              <SelectItem value={DIFFICULTIES.advanced}>Avancé</SelectItem>
+              <SelectItem value={DIFFICULTIES.expert}>Expert</SelectItem>
             </SelectContent>
           </Select>
         </div>
@@ -84,18 +100,18 @@ export function SpotFilters({ onFiltersChange, spots }: SpotFiltersProps) {
         <div>
           <Label>Saison</Label>
           <Select
-            value={filters.bestSeason || ""}
+            value={filters.bestSeason}
             onValueChange={(value) => applyFilters({ bestSeason: value })}
           >
             <SelectTrigger>
               <SelectValue placeholder="Toutes les saisons" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="">Toutes</SelectItem>
-              <SelectItem value="winter">Hiver</SelectItem>
-              <SelectItem value="spring">Printemps</SelectItem>
-              <SelectItem value="summer">Été</SelectItem>
-              <SelectItem value="fall">Automne</SelectItem>
+              <SelectItem value={SEASONS.all}>Toutes</SelectItem>
+              <SelectItem value={SEASONS.winter}>Hiver</SelectItem>
+              <SelectItem value={SEASONS.spring}>Printemps</SelectItem>
+              <SelectItem value={SEASONS.summer}>Été</SelectItem>
+              <SelectItem value={SEASONS.fall}>Automne</SelectItem>
             </SelectContent>
           </Select>
         </div>
